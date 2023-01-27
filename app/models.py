@@ -4,6 +4,7 @@ from flask_login import UserMixin
 from app import db, login
 
 
+
 class User(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)
     email = db.Column(db.String(50), nullable=False, unique=True)
@@ -23,6 +24,25 @@ class User(db.Model, UserMixin):
 
     def check_password(self, password_guess):
         return check_password_hash(self.password, password_guess)
+
+    def to_dict(self):
+        return {
+            'id' : self.id, 
+            'email': self.email,
+            'username': self.username,
+            'password': self.password,
+            'posts': [p.to_dict() for p in self.posts.all()],
+        }
+
+    # def to_dict(self):
+    #     return {
+    #         'id' : self.id,
+    #         'email' : self.email, 
+    #         'username': self.username, 
+    #         'password': self.password,
+    #         'posts': self.posts,
+    #     }
+        
 
 @login.user_loader
 def load_user(user_id):
